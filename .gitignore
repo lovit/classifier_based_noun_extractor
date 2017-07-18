@@ -1,6 +1,11 @@
 # MacOS
 .DS_Store
 
+# Large size data
+lrdb*
+sentences.txt
+sentences_tagged.txt
+
 # Python
 .pyc
 __pycache__/
@@ -10,6 +15,9 @@ build/
 
 # Experiments
 tmp/
+jupyter/config.py
+models/S*.pkl
+models/M*.pkl
 
 # Jupyter notebook
 .ipynb_checkpoints/
