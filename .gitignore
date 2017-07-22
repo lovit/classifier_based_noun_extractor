@@ -5,6 +5,7 @@
 lrdb*
 sentences.txt
 sentences_tagged.txt
+sentences_onlyhangle.txt
 
 # Python
 .pyc
