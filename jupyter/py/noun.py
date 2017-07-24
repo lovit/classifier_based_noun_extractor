@@ -3,12 +3,13 @@ from soynlp.utils import get_process_memory
 from soynlp.hangle import normalize
 import numpy as np
 
+
 class TrainedNounExtractor:
     def __init__(self, coefficient, max_length=8):
         self._coef = coefficient
         self.lmax = max_length
         self.josa_threshold = -0.1
-        self.josa = sorted(filter(lambda x:x[1] > self.josa_threshold, self._coef.items()), key=lambda x:x[1], reverse=True)
+        self.josa = {j for j, _ in filter(lambda x:x[1] > self.josa_threshold, self._coef.items())}
         self.postnoun = set('가감계과권꾼네님대댁당들력로론류률상생성시식용율의인이일재적제중째쯤층치파판풍형화')
         
     def extract(self, sents, min_count=10, min_noun_score=0.1):
