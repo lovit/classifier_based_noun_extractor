@@ -179,14 +179,14 @@ class TrainedNounExtractor:
             return {r for r in self.lrgraph.get(base, {}).keys() if r}
         droprate = lambda shorter,longer: 1 if not shorter in self.lset else 1 - (self.lset.get(longer, 0) / self.lset[shorter])
         
-        droprate_threshold = 0.8
+        droprate_threshold = 0.2
         postprocess_noun_threshold=0.5
         postprocess_be_threshold = 0.8
 
-        compound_processeds = {}
+        nouns_ = {}
         for noun, score in nouns.items():
             if (len(noun) <= 2) or (droprate(noun[:-1], noun) < droprate_threshold) or (score.be > postprocess_be_threshold): 
-                compound_processeds[noun] = score
+                nouns_[noun] = score
                 continue
             noun_sub = noun[:-1]
             matched = match_r_is_nounjosa(noun_sub, noun[-1], nouns)
@@ -194,9 +194,20 @@ class TrainedNounExtractor:
                 for l1 in set(tuple(zip(*matched))[0]):
                     compound = noun_sub+l1
                     if (compound in self.lrgraph) and (len(get_branch(compound)) > 2):
-                        compound_processeds[compound] = (noun_sub, l1)
+                        nouns_[compound] = (noun_sub, l1)
                 continue
             if (score.score > postprocess_noun_threshold) and (score.be > postprocess_be_threshold):
-                compound_processeds[noun] = score
-        print('n_nouns after compound processing= %d' % len(compound_processeds))
-        return compound_processeds
+                nouns_[noun] = score
+        
+        nouns = {}
+        for noun, score in sorted(nouns_.items(), key=lambda x:len(x[0])):
+            if (len(noun) <= 2) or (type(score) == tuple):
+                nouns[noun] = score
+                continue
+            noun_sub = noun[:-1]
+            if (noun_sub in nouns_) and (noun_sub in nouns) and droprate(noun_sub, noun) < droprate_threshold:
+                del nouns[noun_sub]
+            nouns[noun] = score
+
+        print('n_nouns after compound processing= %d' % len(nouns))
+        return nouns

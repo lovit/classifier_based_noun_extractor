@@ -1,3 +1,5 @@
+import pickle
+
 def load_vocabs(fname):
     with open(fname, encoding='utf-8') as f:
         vocabs = [doc.strip() for doc in f]
@@ -21,3 +23,29 @@ def load_data(head, directory):
 
     print('x shape = %s\ny shape = %s\n# features = %d\n# L words = %d' % (x.shape, y.shape, len(vocabs), len(x_word)))
     return x, y, x_word, vocabs
+
+def save_pickle(obj, fname):
+    with open(fname, 'wb') as f:
+        pickle.dump(obj, f)
+
+def load_pickle(fname):
+    with open(fname, 'rb') as f:
+        return pickle.load(f)
+    
+def load_list(fname):
+    with open(fname, encoding='utf-8') as f:
+        return [doc.split()[0] for doc in f]
+    
+def save_lr_coefficient(coefficient, fname):
+    coefficient = {feature:tuple(value) for feature, value in coefficient.items()}
+    save_pickle(coefficient, fname)
+    
+def load_lr_coefficient(fname, as_coef_dict=True):
+    coefficient = load_pickle(fname)
+    if as_coef_dict:
+        coefficient = {feature:value[0] for feature, value in coefficient.items()}
+    else:
+        from collections import namedtuple
+        Info = namedtuple('Info', 'coef count')
+        coefficient = {feature:Info(value[0], value[1]) for feature, value in coefficient.items()}
+    return coefficient
