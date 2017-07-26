@@ -49,3 +49,14 @@ def load_lr_coefficient(fname, as_coef_dict=True):
         Info = namedtuple('Info', 'coef count')
         coefficient = {feature:Info(value[0], value[1]) for feature, value in coefficient.items()}
     return coefficient
+
+class Sentences:
+    def __init__(self, fnames):
+        if type(fnames) == str:
+            fnames = [fnames]
+        self.fnames = fnames
+    def __iter__(self):
+        for fname in self.fnames:
+            with open(fname, encoding='utf-8') as f:
+                for doc in f:
+                    yield doc.strip()
